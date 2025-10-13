@@ -34,8 +34,6 @@ source .venv/bin/activate
 Install dependencies
 pip install -r requirements.txt
 
-Then visit: http://127.0.0.1:8000
-
 Project Structure
 school-raising-assistant/
 ├── app.py                # FastAPI entrypoint

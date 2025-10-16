@@ -5,18 +5,17 @@
 ## 🚀 Objective
 
 Build a functional MVP (internal demo) in 3 weeks that:
-- Transforms 4–6 user inputs into a campaign draft
+- Transforms 6 user inputs into a campaign draft
 - Suggests title, description, rewards, CTA, and tags
 - Is inspired by ~150 past school campaigns (CSV + FAISS)
 - Uses a hosted LLM (OpenAI GPT-4o) and lightweight RAG pipeline
 
 ## 🧰 Tech Stack
 
-- Python 3.12.4
-- FastAPI
+- Python 3.11.3
 - FAISS + SentenceTransformers
-- OpenAI API (GPT-4o)
-- Pandas, Loguru
+- GROQ API
+- Pandas
 - Local vector database
 
 ## 📦 Setup
@@ -24,24 +23,18 @@ Build a functional MVP (internal demo) in 3 weeks that:
 ### 1. Clone the repository
 
 ```bash
-git clone git@github.com:talalike/school-raising-assistant.git
-cd school-raising-assistant
 
-Create and activate virtual environment
+Activate virtual environment and Install dependencies
+
 python3 -m venv .venv
 source .venv/bin/activate
-
-Install dependencies
 pip install -r requirements.txt
 
 Project Structure
-school-raising-assistant/
-├── app.py                # FastAPI entrypoint
+school-raising-assistant (Suraj_prev work)/
+├── sr_rag.py             # FastAPI entrypoint
 ├── requirements.txt      # Python dependencies
 ├── data/                 # CSV dataset (150 school campaigns)
 ├── embeddings/           # FAISS vector DB + embeddings
 ├── pipeline/             # RAG pipeline and prompt templates
-├── utils/                # Helper scripts (e.g. data loader)
-├── notebooks/            # Jupyter testing notebooks
-├── frontend/             # Optional basic UI form
 

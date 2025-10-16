@@ -16,7 +16,7 @@ Build a functional MVP (internal demo) in 3 weeks that:
 - FastAPI
 - FAISS + SentenceTransformers
 - OpenAI API (GPT-4o)
-- Pandas, Loguru
+- Pandas
 - Local vector database
 
 ## 📦 Setup
@@ -34,9 +34,15 @@ source .venv/bin/activate
 Install dependencies
 pip install -r requirements.txt
 
+Please run first this command
+--> python -m pipeline.generate_embeddings ( in order to generate your embeddings) 
+after that you can run 
+--> python interactive_assistant.py
+
+
+
 Project Structure
 school-raising-assistant/
-├── app.py                # FastAPI entrypoint
 ├── requirements.txt      # Python dependencies
 ├── data/                 # CSV dataset (150 school campaigns)
 ├── embeddings/           # FAISS vector DB + embeddings

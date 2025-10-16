@@ -25,26 +25,58 @@ def validate_output_sections(text):
     intro_match = re.search(r"Introduction[:\*]*.*?\n(.+?)(?:\n\n|\Z)", text, re.DOTALL)
     desc_match = re.search(r"Description[:\*]*.*?\n+(.+?)(?=\n\n(?:\*\*|Rewards|\ud83d\udcda|\Z))", text, re.DOTALL)
 
+    # Titolo principale
     if title_match:
         title = title_match.group(1).strip()
         results["title_length"] = len(title)
         results["title"] = title
 
+    # Titolo alternativo 1
+    alt1_match = re.search(r"🎯 Alternative Title 1:\s*(.+)", text)
+    if alt1_match:
+        alt1 = alt1_match.group(1).strip()
+        results["alt_title_1"] = alt1
+        results["alt_title_1_length"] = len(alt1)
+    else:
+        print("❌ Alternative Title 1 not found.")
+
+    # Titolo alternativo 2
+    alt2_match = re.search(r"🎯 Alternative Title 2:\s*(.+)", text)
+    if alt2_match:
+        alt2 = alt2_match.group(1).strip()
+        results["alt_title_2"] = alt2
+        results["alt_title_2_length"] = len(alt2)
+    else:
+        print("❌ Alternative Title 2 not found.")
+
+    # Introduzione
     if intro_match:
         intro = intro_match.group(1).strip()
         results["introduction_length"] = len(intro)
         results["introduction"] = intro
 
+    # Descrizione
     if desc_match:
         desc = desc_match.group(1).strip()
         results["description_length"] = len(desc)
         results["description"] = desc
 
+    # Log di verifica
     print("\n📏 Post-check – Sezione per sezione:")
     if "title_length" in results:
         print(f"🔠 Title length: {results['title_length']} characters")
         if results["title_length"] > 50:
             print("❌ Title too long! (>50)")
+
+    if "alt_title_1_length" in results:
+        print(f"🎯 Alt Title 1 length: {results['alt_title_1_length']} characters")
+        if results["alt_title_1_length"] > 50:
+            print("❌ Alt Title 1 too long! (>50)")
+
+    if "alt_title_2_length" in results:
+        print(f"🎯 Alt Title 2 length: {results['alt_title_2_length']} characters")
+        if results["alt_title_2_length"] > 50:
+            print("❌ Alt Title 2 too long! (>50)")
 
     if "introduction_length" in results:
         print(f"📚 Introduction length: {results['introduction_length']} characters")
@@ -57,6 +89,7 @@ def validate_output_sections(text):
             print("❌ Description too short! (<1000)")
 
     print("\n🧪 Post-check complete.\n")
+
 
 # 🔐 Env + Load
 load_dotenv()
@@ -100,12 +133,20 @@ length, and content — but do not copy.
 
 📌 Based on the user's input, generate the following sections:
 
-1. Title (max 50 characters – strict limit)  
-→ Must be clear, educational, and inspiring.  
-→ Avoid advertising slogans or obscure acronyms.  
-→ If the title exceeds 50 characters, you MUST regenerate it before returning the final answer.  
-→ Do not include any title longer than 50 characters in the final output.
-→ Double-check the character count before output.
+1. Title (main + 2 alternatives, each max 50 characters – strict limit)  
+→ Generate three title options for the campaign:  
+   - **Title**: the main, most natural choice  
+   - **Alternative Title 1**: another clear and inspiring option  
+   - **Alternative Title 2**: a different version with the same clarity and tone  
+→ All three must be clear, educational, and inspiring.  
+→ Avoid slogans, acronyms, or overly generic titles.  
+→ Each title must stay within 50 characters (strict limit).  
+→ Double-check the character count before output.  
+→ Format them exactly like this:  
+
+📌 Title: [main title]  
+🎯 Alternative Title 1: [first alternative]  
+🎯 Alternative Title 2: [second alternative]  
                                       
 2. In Practice (1 sentence, max 160 characters)  
 → Describe what the project will do, for whom, and why.  

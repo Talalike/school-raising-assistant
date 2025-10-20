@@ -7,6 +7,27 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 import re
+from pathlib import Path
+
+# 🔐 Env + Load
+load_dotenv()
+db_path = "embeddings/vector_db"
+vectorstore_path = Path(f"{db_path}/index.faiss")
+
+# 🔍 Check if FAISS vectorstore exists before loading
+if not vectorstore_path.exists():
+    print("🚧 Vectorstore not found. Running embedding pipeline...")
+    from pipeline.generate_embeddings import generate_embeddings
+    generate_embeddings()
+    print("✅ Embeddings generated successfully.\n")
+
+# ✅ Ora possiamo caricare il vectorstore
+embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+vectorstore = FAISS.load_local(
+    db_path,
+    embeddings=embedding_model,
+    allow_dangerous_deserialization=True
+)
 
 # 🧠 Jaccard Similarity
 
@@ -92,13 +113,6 @@ def validate_output_sections(text):
             print("❌ Description too short! (<1000)")
 
     print("\n🧪 Post-check complete.\n")
-
-
-# 🔐 Env + Load
-load_dotenv()
-db_path = "embeddings/vector_db"
-embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
-vectorstore = FAISS.load_local(db_path, embeddings=embedding_model, allow_dangerous_deserialization=True)
 
 # 🔹 Custom Retriever
 

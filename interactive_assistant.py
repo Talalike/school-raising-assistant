@@ -17,15 +17,19 @@ def main():
 
     print("\n🚀 Generating your campaign draft. Please wait...\n")
 
-    _ = run_pipeline(
+    result = run_pipeline(
         school_name=school_name,
         project_category=project_category,
         user_input_1=user_input_1,
         user_input_2=user_input_2,
         user_input_3=user_input_3,
-        k=5  # or any value you want for top-k retrieval
+        k=5
     )
+    print(f"\n📡 DEBUG – type(result): {type(result)}")
+
+    import json # comment this line if you don't want JSON output
+    print("\n🧾 Final structured output:\n") #  comment this line if you don't want JSON output
+    print(json.dumps(result, indent=2, ensure_ascii=False)) #  comment this line if you don't want JSON output
 
 if __name__ == "__main__":
     main()
-

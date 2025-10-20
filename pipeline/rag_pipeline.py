@@ -20,19 +20,19 @@ def jaccard_similarity(str1, str2):
 # 📊 Validate Output Sections
 
 def validate_output_sections(text):
-    results = {}
-    title_match = re.search(r"Title[:\*]*.*?\s*(.+)", text)
-    intro_match = re.search(r"Introduction[:\*]*.*?\n(.+?)(?:\n\n|\Z)", text, re.DOTALL)
-    desc_match = re.search(r"Description[:\*]*.*?\n+(.+?)(?=\n\n(?:\*\*|Rewards|\ud83d\udcda|\Z))", text, re.DOTALL)
+    import re
 
-    # Titolo principale
+    results = {}
+
+    # 🎯 Titolo principale
+    title_match = re.search(r"\*{0,2}\s*Title:\s*(.+)", text)
     if title_match:
         title = title_match.group(1).strip()
         results["title_length"] = len(title)
         results["title"] = title
 
-    # Titolo alternativo 1
-    alt1_match = re.search(r"🎯 Alternative Title 1:\s*(.+)", text)
+    # 🎯 Titolo alternativo 1
+    alt1_match = re.search(r"(?:🎯|\*{0,2})\s*Alternative Title 1:\s*(.+)", text)
     if alt1_match:
         alt1 = alt1_match.group(1).strip()
         results["alt_title_1"] = alt1
@@ -40,8 +40,8 @@ def validate_output_sections(text):
     else:
         print("❌ Alternative Title 1 not found.")
 
-    # Titolo alternativo 2
-    alt2_match = re.search(r"🎯 Alternative Title 2:\s*(.+)", text)
+    # 🎯 Titolo alternativo 2
+    alt2_match = re.search(r"(?:🎯|\*{0,2})\s*Alternative Title 2:\s*(.+)", text)
     if alt2_match:
         alt2 = alt2_match.group(1).strip()
         results["alt_title_2"] = alt2
@@ -49,20 +49,23 @@ def validate_output_sections(text):
     else:
         print("❌ Alternative Title 2 not found.")
 
-    # Introduzione
+    # 📖 Introduzione
+    intro_match = re.search(r"\*{0,2}\s*Introduction:\*{0,2}\s*(.+?)\n+\*{0,2}\s*Description:", text, re.DOTALL)
     if intro_match:
         intro = intro_match.group(1).strip()
         results["introduction_length"] = len(intro)
         results["introduction"] = intro
 
-    # Descrizione
+    # 📝 Descrizione
+    desc_match = re.search(r"\*{0,2}\s*Description:\*{0,2}\s*(.+?)\n+\*{0,2}\s*Rewards:", text, re.DOTALL)
     if desc_match:
         desc = desc_match.group(1).strip()
         results["description_length"] = len(desc)
         results["description"] = desc
 
-    # Log di verifica
+    # 🧾 Log finale per verifica
     print("\n📏 Post-check – Sezione per sezione:")
+
     if "title_length" in results:
         print(f"🔠 Title length: {results['title_length']} characters")
         if results["title_length"] > 50:
@@ -131,7 +134,7 @@ The retrieved examples reflect the typical style of successful Italian school ca
 inclusive, educational, and community-driven. Use them as inspiration for tone, structure,
 length, and content — but do not copy.
 
-📌 Based on the user's input, generate the following sections:
+Based on the user's input, generate the following sections:
 
 1. Title (main + 2 alternatives, each max 50 characters – strict limit)  
 → Generate three title options for the campaign:  
@@ -144,9 +147,9 @@ length, and content — but do not copy.
 → Double-check the character count before output.  
 → Format them exactly like this:  
 
-📌 Title: [main title]  
-🎯 Alternative Title 1: [first alternative]  
-🎯 Alternative Title 2: [second alternative]  
+Title: [main title]  
+Alternative Title 1: [first alternative]  
+Alternative Title 2: [second alternative]  
                                       
 2. In Practice (1 sentence, max 160 characters)  
 → Describe what the project will do, for whom, and why.  
@@ -194,7 +197,7 @@ length, and content — but do not copy.
 → Do not suggest the reward “donazione libera”.
 
 
-🟩 Global style rules:
+Global style rules:
 Language: simple, accessible, non-bureaucratic English
 Voice: inclusive “we”, involving families and community
 Avoid: superlatives (“the best...”), marketing tone, acronyms, or technical terms
@@ -202,17 +205,17 @@ Ensure inclusivity: mention benefits for all students; avoid any barriers
 Use short sentences, compact paragraphs, and reader-friendly formatting
 No Politics, no sexism, no racism.
 
-🧑‍🏫 User input:
+User input:
 1. School name → {school_name}
 2. Project category → {project_category}
 3. What is your project about? → {user_input_1}
 4. Why is this project important? → {user_input_2}
 5. Would you like to offer rewards? → {user_input_3}
 
-📚 Retrieved example campaigns:
+Retrieved example campaigns:
 {context}
 
-✏ Now write the full campaign draft as specified above.
+Now write the full campaign draft as specified above.
 """)
 
     llm = ChatOpenAI(model="gpt-4o", temperature=0.3, openai_api_key=os.getenv("OPENAI_API_KEY"))
@@ -251,7 +254,91 @@ No Politics, no sexism, no racism.
     if too_similar:
         print("🚫 Max attempts reached. Final response may still be too similar.")
 
-    print("\n📣 Final Campaign Draft:\n")
-    print(final_response)
+    print("\n📣 Final Campaign Draft:\n") # comment this line in case you want output only in JSON format and not text format
+    print(final_response)                  # comment this line in case you want output only in JSON format and not text format
     validate_output_sections(final_response)
-    return final_response
+
+    parsed_output = parse_generated_output(final_response)
+    print("📦 Parsed output to return to FastAPI:")
+    print(parsed_output)
+    return parsed_output
+
+    # 👇 Funzione di parsing incorporata
+def parse_generated_output(text):
+    import re
+    import logging
+
+    parsed = {
+        "title": "[MISSING]",
+        "alt_title_1": "[MISSING]",
+        "alt_title_2": "[MISSING]",
+        "in_practice": "[MISSING]",
+        "introduction": "[MISSING]",
+        "description": "[MISSING]",
+        "rewards": []
+    }
+
+    try:
+        parsed["title"] = re.search(r"\*{0,2}\s*Title:\s*(.*)", text).group(1).strip()
+        parsed["alt_title_1"] = re.search(r"\*{0,2}\s*Alternative Title 1:\s*(.*)", text).group(1).strip()
+        parsed["alt_title_2"] = re.search(r"\*{0,2}\s*Alternative Title 2:\s*(.*)", text).group(1).strip()
+    except Exception as e:
+        logging.warning("⚠️ Title block parsing failed: %s", e)
+
+    try:
+        parsed["in_practice"] = re.search(r"\*{0,2}\s*In Practice:\s*(.*)", text).group(1).strip()
+    except Exception as e:
+        logging.warning("⚠️ In Practice parsing failed: %s", e)
+
+    try:
+        intro_match = re.search(r"\*{0,2}\s*Introduction:\*{0,2}\s*(.+?)\n+\*{0,2}\s*Description:", text, re.DOTALL)
+        if intro_match:
+            parsed["introduction"] = intro_match.group(1).strip()
+        else:
+            logging.warning("⚠️ Introduction section not matched.")
+    except Exception as e:
+        logging.warning("⚠️ Introduction parsing failed: %s", e)
+
+    try:
+        desc_match = re.search(r"\*{0,2}\s*Description:\*{0,2}\s*(.+?)\n+\*{0,2}\s*Rewards:", text, re.DOTALL)
+        if desc_match:
+            parsed["description"] = desc_match.group(1).strip()
+        else:
+            logging.warning("⚠️ Description section not matched.")
+    except Exception as e:
+        logging.warning("⚠️ Description parsing failed: %s", e)
+
+    try:
+        rewards_match = re.search(r"\*{0,2}\s*Rewards:\*{0,2}\s*(.+)", text, re.DOTALL)
+        if rewards_match:
+            rewards_raw = rewards_match.group(1).strip()
+            reward_blocks = re.split(r"\n{2,}", rewards_raw)
+            for block in reward_blocks:
+                lines = block.strip().split("\n")
+                if len(lines) >= 3:
+                    name = lines[0].replace("**", "").strip()
+                    desc = lines[1].strip()
+                    price = re.sub(r"[^\d]", "", lines[2])
+                    try:
+                        parsed["rewards"].append({
+                            "name": name,
+                            "description": desc,
+                            "price": int(price)
+                        })
+                    except ValueError:
+                        continue
+    except Exception as e:
+        logging.warning("⚠️ Rewards parsing failed: %s", e)
+
+    # Fallback
+    for key in parsed:
+        if key != "rewards" and (not parsed[key] or parsed[key] == "[MISSING]"):
+            parsed[key] = f"[Auto-filled content for missing section: {key}]"
+    if not parsed["rewards"]:
+        parsed["rewards"] = [{
+            "name": "Supporter",
+            "description": "Thank you for supporting our school project!",
+            "price": 10
+        }]
+
+    return parsed

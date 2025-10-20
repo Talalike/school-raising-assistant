@@ -158,3 +158,6 @@ webencodings==0.5.1
 websocket-client==1.9.0
 yarl==1.22.0
 zstandard==0.25.0
+reportlab==4.4.4
+streamlit==1.29.0
+watchdog-6.0.0

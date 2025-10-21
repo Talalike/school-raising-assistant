@@ -1,0 +1,28 @@
+# ─── Python build artefacts ───────────────────────────────
+__pycache__
+*.pyc
+
+# ─── Virtual-envs (don’t ship local site-packages) ───────
+.venv/
+venv/
+env/
+
+# ─── Jupyter & notebooks (large, dev-only) ───────────────
+notebooks/
+*.ipynb
+*.ipynb_checkpoints
+
+# ─── Logs / local data caches ────────────────────────────
+*.log
+*.sqlite
+
+# ─── Editor / IDE miscellany ─────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+
+# ─── Git history ─────────────────────────────────────────
+.git/
+
+# ─── Secrets ─────────────────────────────────────────────
+.env

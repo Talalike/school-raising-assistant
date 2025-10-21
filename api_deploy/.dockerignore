@@ -1,0 +1,35 @@
+# 🐍 Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 📚 Notebook files
+*.ipynb
+*.ipynb_checkpoints
+notebooks/
+
+
+# 📦 Virtual environments
+.venv/
+env/
+venv/
+
+# 🔒 Sensitive files
+.env
+
+# 📁 Local data, logs, DB
+data/
+# embeddings/
+*.db
+*.sqlite
+*.log
+
+# 🛠️ Dev and IDE files
+.vscode/
+.idea/
+.DS_Store
+
+# 🔃 Git
+.git/
+.gitignore

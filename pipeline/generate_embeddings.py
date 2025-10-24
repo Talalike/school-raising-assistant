@@ -3,6 +3,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 import csv  # 👈 nuovo import
 
+
 def generate_embeddings():
     # Step 1: Load preprocessed documents
     documents = load_schoolraising_documents()
@@ -11,8 +12,8 @@ def generate_embeddings():
     # Step 2: Initialize the embeddings model
     model_name = "sentence-transformers/all-mpnet-base-v2"
     embeddings = HuggingFaceEmbeddings(
-    model_name=model_name,
-    encode_kwargs={"batch_size": 32})
+        model_name=model_name,
+        encode_kwargs={"batch_size": 32})
 
     print(f"🔍 Using embedding model: {model_name}")
 
@@ -27,7 +28,8 @@ def generate_embeddings():
     # Step 5: Save debug info to CSV
     with open("embeddings/debug_vector_log.csv", mode="w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
-        writer.writerow(["Index", "Length", "Preview", "Category", "School", "Project ID"])
+        writer.writerow(["Index", "Length", "Preview",
+                        "Category", "School", "Project ID"])
         for i, doc in enumerate(documents):
             writer.writerow([
                 i,
@@ -39,7 +41,6 @@ def generate_embeddings():
             ])
     print("🧾 Log CSV salvato in embeddings/debug_vector_log.csv")
 
+
 if __name__ == "__main__":
     generate_embeddings()
-
-

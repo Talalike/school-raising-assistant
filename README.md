@@ -5,7 +5,7 @@
 ## 🚀 Objective
 
 Build a functional MVP (internal demo) in 3 weeks that:
-- Transforms 4–6 user inputs into a campaign draft
+- Transforms 5 user inputs into a campaign draft
 - Suggests title, description, rewards, CTA, and tags
 - Is inspired by ~150 past school campaigns (CSV + FAISS)
 - Uses a hosted LLM (OpenAI GPT-4o) and lightweight RAG pipeline

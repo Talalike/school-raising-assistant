@@ -58,6 +58,8 @@ Create a `.env` file in the root directory with your OpenAI API key ( at the mom
 
 ```env
 
+HUGGINGFACE_TOKEN=your_token_here
+OPENAI_API_KEY=your_token_here
 ALBA_API_BASE=https://alba-assistant-api-712522077513.europe-west1.run.app
 ```
 

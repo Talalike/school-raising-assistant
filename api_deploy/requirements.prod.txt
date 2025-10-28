@@ -14,6 +14,6 @@ faiss-cpu==1.12.0
 python-dotenv==1.1.1
 orjson==3.11.3
 pandas==2.3.3
-SQLAlchemy==2.0.44
+# SQLAlchemy==2.0.44
 tiktoken==0.12.0
 tenacity==9.1.2

@@ -32,14 +32,12 @@ st.markdown("""
   margin-top:1rem;
 }
 .alba-title{ font-size:1.5rem; font-weight:800; margin:0.25rem 0 0.25rem 0; color:#151515; }
-.alba-subtle{ color:#6B7280; }
 
 .alba-two{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:.75rem;}
 @media (max-width: 900px){ .alba-two{ grid-template-columns: 1fr; } }
 
 .alba-card{ background:#FFF; border:1px solid #E8ECFF; border-radius:16px; padding:1rem 1.1rem; }
 .alba-card h4{ margin:.25rem 0 .5rem 0; }
-.alba-kv{ margin:.15rem 0; }
 .alba-reward{
   background:#FFF; border:1px solid #E8ECFF; border-radius:14px; padding:12px; margin-top:10px;
 }
@@ -48,7 +46,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------- Hero summary ----------
-st.markdown('<div class="alba-hero-card">', unsafe_allow_html=True)
+# st.markdown('<div class="alba-hero-card">', unsafe_allow_html=True)
 st.markdown(
     f'<div class="alba-title">{draft.get("title","Untitled")}</div>', unsafe_allow_html=True)
 
@@ -65,11 +63,11 @@ st.markdown('</div>', unsafe_allow_html=True)
 st.markdown('<div class="alba-two">', unsafe_allow_html=True)
 with st.container():
     st.markdown('<div class="alba-card">', unsafe_allow_html=True)
-    st.markdown("#### Introduction")
-    st.write(draft.get("introduction", ""))
-    st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
-    st.markdown("#### In Practice")
+    st.markdown("#### In Practice")        # <-- moved up
     st.write(draft.get("in_practice", ""))
+    st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
+    st.markdown("#### Introduction")       # <-- moved below
+    st.write(draft.get("introduction", ""))
     st.markdown('</div>', unsafe_allow_html=True)
 
 with st.container():
@@ -91,7 +89,9 @@ if isinstance(rewards, list) and rewards:
         desc = (r.get("description", "") if isinstance(r, dict) else "")
         price = (r.get("price", "") if isinstance(r, dict) else "")
         st.markdown(
-            f'<div class="alba-reward"><b>{i}. {name}</b><br/><span class="alba-subtle">{desc}</span><br/><span class="alba-kv">Price (€): <b>{price}</b></span></div>', unsafe_allow_html=True)
+            f'<div class="alba-reward"><b>{i}. {name}</b><br/><span class="alba-subtle">{desc}</span><br/><span class="alba-kv">Price (€): <b>{price}</b></span></div>',
+            unsafe_allow_html=True,
+        )
 else:
     st.caption("No rewards included.")
 
@@ -110,4 +110,6 @@ if st.button("Generate a new campaign", type="primary"):
 st.markdown('</div>', unsafe_allow_html=True)
 
 # Optional: tiny footer line
-st.caption("Alba is a SchoolRaising initiative to help schools tell their stories and mobilize their communities.")
+st.caption(
+    "Alba is a SchoolRaising initiative to help schools tell their stories and mobilize their communities."
+)

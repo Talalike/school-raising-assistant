@@ -40,14 +40,3 @@ after that you can run
 --> python interactive_assistant.py
 
 
-
-Project Structure
-school-raising-assistant/
-├── requirements.txt      # Python dependencies
-├── data/                 # CSV dataset (150 school campaigns)
-├── embeddings/           # FAISS vector DB + embeddings
-├── pipeline/             # RAG pipeline and prompt templates
-├── utils/                # Helper scripts (e.g. data loader)
-├── notebooks/            # Jupyter testing notebooks
-├── frontend/             # Optional basic UI form
-

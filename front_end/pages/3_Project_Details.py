@@ -1,5 +1,4 @@
 # front_end/pages/3_Project_Details.py
-import textwrap
 import streamlit as st
 from utils_fe import (
     inject_global_styles,
@@ -14,129 +13,166 @@ st.set_page_config(page_title="Alba — Project Details",
 inject_global_styles()
 ensure_state(st)
 
-# Guard: if user skipped Step 2
-if not st.session_state.school_name:
-    st.info("Please fill in your project basics first.")
+# Guard: if user skipped Step 2, send them back
+if not st.session_state.get("school_name", "").strip():
     st.switch_page("pages/2_Project_Basics.py")
 
 # ---------- Progress header ----------
 step_header(step=3, total=5, title="Project Details")
 
-# ---------- Styles ----------
-st.markdown(
-    """
+# ---------- Page-local styles (scoped) ----------
+st.markdown("""
 <style>
-.alba-card { background:#FFF; border:1px solid #E8ECFF; border-radius:16px; padding:2rem 2.25rem; margin-top:1.5rem; }
-.alba-help { color:#6B7280; font-size:.95rem; margin-top:.25rem; }
-.alba-hint { color:#6B7280; font-size:.9rem; margin:.25rem 0 .75rem; }
-.alba-buttons { display:flex; justify-content:space-between; margin-top:1.5rem; }
-.alba-counter { color:#6B7280; font-size:.85rem; text-align:right; margin-top:.25rem; }
+/* A calmer, airier rhythm than default .alba-card stacks */
+.alba-card.details-stack { padding: 1.2rem 1.3rem; }
+.details-mini { 
+  background: var(--alba-surface, #ffffff);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 16px;
+  padding: 1rem 1rem 0.25rem 1rem;
+  margin-bottom: 12px;
+  transition: box-shadow .15s ease, border-color .15s ease;
+}
+.details-mini.invalid { 
+  border-color: rgba(84,110,255,0.45);
+  box-shadow: 0 0 0 3px rgba(84,110,255,0.12);
+}
+.details-label {
+  font-weight: 600; 
+  font-size: 0.95rem; 
+  margin-bottom: 6px;
+}
+.details-divider {
+  height: 1px; 
+  background: rgba(0,0,0,0.05); 
+  margin: 8px 0 2px 0;
+}
+
+/* Softer textarea visuals without touching global theme */
+.details-mini .stTextArea textarea {
+  border-radius: 12px !important;
+  line-height: 1.45 !important;
+  min-height: 130px !important;
+}
+.details-mini .stTextArea textarea:focus {
+  box-shadow: 0 0 0 3px rgba(84,110,255,0.10) !important;
+  border-color: rgba(84,110,255,0.35) !important;
+}
 </style>
-""",
-    unsafe_allow_html=True,
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="alba-card details-stack">', unsafe_allow_html=True)
+
+# ---------- Validation helpers ----------
+
+
+def _is_blank(val: str) -> bool:
+    return not str(val or "").strip()
+
+
+invalid_map = {"f1": False, "f2": False, "f3": False}
+scroll_target = None  # will become the first invalid field id on submit
+
+# ---------- Fields (placeholders only, no counters) ----------
+# Field 1
+
+st.markdown('<div class="details-label">About your project</div>',
+            unsafe_allow_html=True)
+about_txt = st.text_area(
+    label="About your project",
+    label_visibility="collapsed",
+    key="user_input_1",
+    placeholder="Briefly describe what you’ll do, with who, and where. Mention activities, timeline, and the intended outcome.",
 )
+st.markdown('<div class="details-divider"></div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------- Form card ----------
-st.markdown('<div class="alba-card">', unsafe_allow_html=True)
-st.markdown("### Tell us more about your idea")
+# Field 2
 
-# Soft char limits (guidance only)
-SOFT_MIN, SOFT_MAX = 60, 600
-
-
-def counter(text: str) -> str:
-    n = len(text.strip())
-    tip = ""
-    if n and n < SOFT_MIN:
-        tip = " · a bit short — consider adding details"
-    elif n > SOFT_MAX:
-        tip = " · quite long — consider tightening"
-    return f"{n} characters{tip}"
-
-
-# --- Q1 ---
-st.session_state.user_input_1 = st.text_area(
-    "What is your project about?",
-    value=st.session_state.user_input_1,
-    help=("Briefly describe the idea: what do you want to do, who is involved, and what makes it special? "
-          "E.g. “We want to create a theater performance on bullying, involving 3 classes and a local artist.”"),
-    height=130,
+st.markdown('<div class="details-label">Why this matters</div>',
+            unsafe_allow_html=True)
+why_txt = st.text_area(
+    label="Why this matters",
+    label_visibility="collapsed",
+    key="user_input_2",
+    placeholder="Explain the need or problem, who benefits (students, teachers, community), and what changes once this project succeeds.",
 )
-st.markdown(
-    f'<div class="alba-counter">{counter(st.session_state.user_input_1)}</div>', unsafe_allow_html=True)
+st.markdown('<div class="details-divider"></div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
-# --- Q2 ---
-st.session_state.user_input_2 = st.text_area(
-    "Why is this project important for your school or community?",
-    value=st.session_state.user_input_2,
-    help=("Tell us what motivated you. What need or dream are you responding to? "
-          "E.g. “Our students often feel excluded and need new ways to express themselves.”"),
-    height=130,
+# Field 3
+
+st.markdown('<div class="details-label">What supporters get</div>',
+            unsafe_allow_html=True)
+perks_txt = st.text_area(
+    label="What supporters get",
+    label_visibility="collapsed",
+    key="user_input_3",
+    placeholder="List simple, meaningful ways to thank supporters (e.g., thank-you note, invite to a class demo, student-made postcard).",
 )
-st.markdown(
-    f'<div class="alba-counter">{counter(st.session_state.user_input_2)}</div>', unsafe_allow_html=True)
+st.markdown('<div class="details-divider"></div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
-# --- Q3 ---
-st.session_state.user_input_3 = st.text_area(
-    "Would you like to offer something to the people who support your project?",
-    value=st.session_state.user_input_3,
-    help=("You can mention a small gift, a public thank you, or an invitation to join an activity. "
-          "E.g. “A thank-you video made by students, or the chance to attend the final event.”"),
-    height=110,
-)
-st.markdown(
-    f'<div class="alba-counter">{counter(st.session_state.user_input_3)}</div>', unsafe_allow_html=True)
-
-st.markdown(
-    '<div class="alba-hint">Tip: write naturally — Alba will polish the tone and structure for you.</div>',
-    unsafe_allow_html=True,
-)
-
-# ---------- Buttons ----------
+# ---------- Buttons row ----------
 st.markdown('<div class="alba-buttons">', unsafe_allow_html=True)
-col_back, col_next = st.columns(2)
-
-with col_back:
+c1, c2 = st.columns(2)
+with c1:
     if st.button("← Back", type="secondary"):
         st.switch_page("pages/2_Project_Basics.py")
-
-with col_next:
+with c2:
     if st.button("Generate draft ✨", type="primary"):
-        # Validate locally
-        fields = {
-            "What is your project about?": st.session_state.user_input_1,
-            "Why is this project important?": st.session_state.user_input_2,
-            "Supporter offer (rewards idea)": st.session_state.user_input_3,
-        }
-        missing = [label for label,
-                   val in fields.items() if not val or not val.strip()]
-        if missing:
-            st.warning("Please complete: " + ", ".join(missing))
-            st.stop()
+        # Validate minimal non-empty inputs
+        invalid_map["f1"] = _is_blank(about_txt)
+        invalid_map["f2"] = _is_blank(why_txt)
+        invalid_map["f3"] = _is_blank(perks_txt)
 
-        payload = {
-            "school_name": st.session_state.school_name.strip(),
-            "project_category": st.session_state.project_category,
-            "user_input_1": st.session_state.user_input_1.strip(),
-            "user_input_2": st.session_state.user_input_2.strip(),
-            "user_input_3": st.session_state.user_input_3.strip(),
-        }
+        # Decide which field to scroll to first (if any)
+        if invalid_map["f1"]:
+            scroll_target = "field1"
+        elif invalid_map["f2"]:
+            scroll_target = "field2"
+        elif invalid_map["f3"]:
+            scroll_target = "field3"
 
-        with st.spinner("Generating your campaign… this usually takes under 2 minutes."):
-            try:
-                st.session_state.draft = generate_campaign(
-                    payload, timeout=180)
-            except Exception as e:
-                # Make a friendly error message
-                msg = str(e)
-                # Trim very long HTTP bodies if present
-                if len(msg) > 900:
-                    msg = msg[:900] + "…"
-                st.error("Generation failed. " + msg)
-                st.stop()
+        if any(invalid_map.values()):
+            st.warning(
+                "Please complete all three sections before generating your draft.")
+            # Apply invalid class via a tiny script (best-effort; harmless if blocked)
+            st.markdown(f"""
+                <script>
+                  const invalids = { [k for k,v in invalid_map.items() if v] };
+                  invalids.forEach(k => {{
+                    const el = document.querySelector(`[data-field="{{k}}"]`);
+                    if (el) el.classList.add("invalid");
+                  }});
+                  const tgt = document.getElementById("{scroll_target or ''}");
+                  if (tgt && tgt.scrollIntoView) {{
+                      tgt.scrollIntoView({{ behavior: "smooth", block: "start" }});
+                  }}
+                </script>
+            """, unsafe_allow_html=True)
+        else:
+            # Build payload strictly from session (names from ensure_state)
+            payload = {
+                "school_name": st.session_state.get("school_name", "").strip(),
+                "project_category": st.session_state.get("project_category", "").strip(),
+                "user_input_1": st.session_state.get("user_input_1", "").strip(),
+                "user_input_2": st.session_state.get("user_input_2", "").strip(),
+                "user_input_3": st.session_state.get("user_input_3", "").strip(),
+            }
 
-        # Proceed to the editable draft page
-        st.switch_page("pages/4_Draft_Editable.py")
+            # Spinner: retain time mention per your decision
+            with st.spinner("Generating your campaign draft — this may take under 2 minutes…"):
+                try:
+                    resp = generate_campaign(payload)
+                    # Persist and proceed
+                    st.session_state.draft = resp
+                    st.switch_page("pages/4_Draft_Editable.py")
+                except Exception as e:
+                    msg = str(e)
+                    if len(msg) > 900:
+                        msg = msg[:900] + "…"
+                    st.error("Generation failed. " + msg)
 
 st.markdown('</div>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
